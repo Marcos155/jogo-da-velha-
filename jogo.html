@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Jogo da Velha</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: -webkit-gradient(linear, left top, left bottom, from(rgb(255, 255, 255)), to(#ffffff)) fixed;
+            background-size: cover;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #board {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* as outras propriedades aqui */
+        }
+
+        h1 {
+            color: #2b2d42;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .game {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .square {
+            width: 100px;
+            height: 100px;
+            font-size: 72px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            background-color: #edf2f4;
+            color: #2b2d42;
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .square:hover {
+            background-color: #8d99ae;
+            color: #f7f7f7;
+        }
+
+        #message {
+            font-size: 24px;
+            text-align: center;
+            margin-top: 20px;
+            color: #2b2d42;
+        }
+
+        #resetButton:hover {
+            background-color: #0d8ddb;
+        }
+
+        #resetButton {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2196f3;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Jogo da Velha</h1>
+    <div class="game">
+        <div class="square" data-index="0"></div>
+        <div class="square" data-index="1"></div>
+        <div class="square" data-index="2"></div>
+        <div class="square" data-index="3"></div>
+        <div class="square" data-index="4"></div>
+        <div class="square" data-index="5"></div>
+        <div class="square" data-index="6"></div>
+        <div class="square" data-index="7"></div>
+        <div class="square" data-index="8"></div>
+    </div>
+    <div id="message"></div>
+    <button id="resetButton">Reset</button>
+    <script>
+        // define variáveis
+        const squares = document.querySelectorAll('.square');
+        const message = document.getElementById('message');
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let isGameOver = false;
+
+        // define funções
+        function handleSquareClick(event) {
+            const squareIndex = event.target.dataset.index;
+            if (gameBoard[squareIndex] !== '' || isGameOver) return;
+
+            gameBoard[squareIndex] = currentPlayer;
+            event.target.textContent = currentPlayer;
+            event.target.classList.add(currentPlayer);
+
+            if (checkForWin()) {
+                isGameOver = true;
+                message.textContent = `${currentPlayer} venceu!`;
+                return;
+            }
+
+            if (checkForTie()) {
+                isGameOver = true;
+                message.textContent = 'Empate!';
+                return;
+            }
+
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            message.textContent = `É a
+        vez de ${currentPlayer}`;
+        }
+        function checkForWin() {
+            const winningCombinations = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6],
+            ];
+
+            for (let i = 0; i < winningCombinations.length; i++) {
+                const [a, b, c] = winningCombinations[i];
+                if (
+                    gameBoard[a] !== '' &&
+                    gameBoard[a] === gameBoard[b] &&
+                    gameBoard[b] === gameBoard[c]
+                ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function checkForTie() {
+            return gameBoard.every((square) => square !== '');
+        }
+
+        function resetGame() {
+            isGameOver = false;
+            currentPlayer = 'X';
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            message.textContent = '';
+            squares.forEach((square) => {
+                square.textContent = '';
+                square.classList.remove('X');
+                square.classList.remove('O');
+            });
+        }
+
+        // adiciona eventos
+        squares.forEach((square) => {
+            square.addEventListener('click', handleSquareClick);
+        });
+
+        resetButton.addEventListener('click', resetGame);
+    </script>
+</body>
+
+</html>
